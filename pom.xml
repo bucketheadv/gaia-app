@@ -9,13 +9,13 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.gaia</groupId>
-    <artifactId>gaia-be</artifactId>
+    <artifactId>gaia-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>gaia-be</name>
-    <description>gaia-be</description>
-    <properties>
-        <java.version>21</java.version>
-    </properties>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>gaia-be</module>
+    </modules>
     <dependencies>
         <dependency>
             <groupId>org.winterframework</groupId>
@@ -40,14 +40,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
