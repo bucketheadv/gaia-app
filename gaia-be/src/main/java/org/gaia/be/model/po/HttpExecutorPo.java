@@ -2,14 +2,12 @@ package org.gaia.be.model.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.gaia.be.dao.handler.ListEventParamJacksonTypeHandler;
 import org.gaia.be.enums.CallTypeEnum;
 import org.gaia.be.model.dto.EventParam;
 
-import java.util.Date;
 import java.util.List;
 
 /**

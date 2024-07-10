@@ -6,7 +6,6 @@
         <groupId>org.gaia</groupId>
         <artifactId>gaia-app</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>gaia-be</artifactId>
     <version>0.0.1-SNAPSHOT</version>
