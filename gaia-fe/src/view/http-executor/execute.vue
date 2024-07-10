@@ -56,7 +56,7 @@
           <Card>
             <div class="ivu-card-body">
               <div class="ivu-description-list">
-                <div class="ivu-description-list-title">Http请求参数</div>
+                <div class="ivu-description-list-title">Http Query参数</div>
                 <div v-if="!form.httpParams || form.httpParams.length === 0">
                   无
                 </div>
@@ -64,10 +64,35 @@
                   <el-form-item :prop="'params.' + param.name" :label="param.nameCN + ' (' + param.name + ')'" :required="param.required">
                     <el-input type="text" v-if="param.type === 'string'" :disabled="param.uneditable" v-model="data.params[param.name]" />
                     <InputNumber v-if="param.type === 'long'" :disabled="param.uneditable" v-model="data.params[param.name]" style="width: 100%" />
-                    <el-date-picker v-if="param.type ==='date' || param.type ==='datetime'" :type="param.type" :disabled="param.uneditable" v-model="data.headers[param.name]" />
+                    <el-date-picker v-if="param.type ==='date' || param.type ==='datetime'" :type="param.type" :disabled="param.uneditable" v-model="data.params[param.name]" />
                     <el-checkbox v-if="param.type === 'boolean'" :disabled="param.uneditable" v-model="data.params[param.name]">是</el-checkbox>
                     <el-select v-if="param.type === 'select'" v-model="data.params[param.name]">
                       <el-option v-for="v in (param.availableValues || '').split('\n')" :key="v" :value="v.split(',')[0]">
+                        {{v.split(',')[1] || v.split(',')[0]}}
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </Row>
+              </div>
+            </div>
+          </Card>
+        </div>
+        <div class="ivu-mt ivu-card-dis-hover">
+          <Card>
+            <div class="ivu-card-body">
+              <div class="ivu-description-list">
+                <div class="ivu-description-list-title">Http Body参数</div>
+                <div v-if="!form.httpBody || form.httpBody.length === 0">
+                  无
+                </div>
+                <Row v-else v-for="(body, idx) in form.httpBody" v-bind:key="'body' + idx">
+                  <el-form-item :prop="'body.' + body.name" :label="body.nameCN + ' (' + body.name + ')'" :required="body.required">
+                    <el-input type="text" v-if="body.type === 'string'" :disabled="body.uneditable" v-model="data.body[body.name]" />
+                    <InputNumber v-if="body.type === 'long'" :disabled="body.uneditable" v-model="data.body[body.name]" style="width: 100%" />
+                    <el-date-picker v-if="body.type ==='date' || body.type ==='datetime'" :type="body.type" :disabled="body.uneditable" v-model="data.body[body.name]" />
+                    <el-checkbox v-if="body.type === 'boolean'" :disabled="body.uneditable" v-model="data.body[body.name]">是</el-checkbox>
+                    <el-select v-if="body.type === 'select'" v-model="data.body[body.name]">
+                      <el-option v-for="v in (body.availableValues || '').split('\n')" :key="v" :value="v.split(',')[0]">
                         {{v.split(',')[1] || v.split(',')[0]}}
                       </el-option>
                     </el-select>
@@ -121,7 +146,8 @@ export default {
       form: {},
       data: {
         headers: {},
-        params: {}
+        params: {},
+        body: {}
       },
       ruleInline: {},
       running: false,
@@ -147,10 +173,17 @@ export default {
           params[param.name] = this.getDefaultValue(param)
           this.buildRuleInline(ruleInline, param, 'params')
         }
+        const body = {}
+        for (let b of this.form.httpBody) {
+          body[b.name] = this.getDefaultValue(b)
+          this.buildRuleInline(ruleInline, b, 'body')
+        }
         this.data = {
           headers: headers,
-          params: params
+          params: params,
+          body: body
         }
+        console.log(JSON.stringify(this.data))
         this.ruleInline = ruleInline
       }).catch(err => this.$Message.error('' + err))
     },
@@ -182,6 +215,7 @@ export default {
     async handleExecute (name) {
       this.running = true
       const params = this.data
+      console.log(JSON.stringify(params))
       this.$refs[name].validate(valid => {
         if (!valid) {
           this.$Message.error('参数错误!')

@@ -20,7 +20,7 @@ public class BaseController {
 
     public <T> ApiResponse<T> fail(int code, String message) {
         ApiResponse<T> result = new ApiResponse<>();
-        result.setCode(0);
+        result.setCode(code);
         result.setMessage(message);
         return result;
     }

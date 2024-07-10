@@ -49,12 +49,19 @@
           </div>
           <Button type="success" :size="'small'" @click="addHttpHeader()" style="margin-bottom: 20px">新增</Button>
         </el-form-item>
-        <el-form-item label="HTTP 参数">
+        <el-form-item label="HTTP Query参数">
           <div v-for="(v, idx) in form.httpParams" style="margin-top: 10px" v-bind:key="form.httpParams.indexOf(v)">
             <http-param-template :value="v" :prop-name="'httpParams.' + idx + '.name'" />
             <Button type="error" :size="'small'" @click="removeThisParam(v)">删除此项 X</Button>
           </div>
           <Button type="success" :size="'small'" @click="addHttpParam()" style="margin-bottom: 20px">新增</Button>
+        </el-form-item>
+        <el-form-item label="HTTP Body参数">
+          <div v-for="(v, idx) in form.httpBody" style="margin-top: 10px" v-bind:key="form.httpBody.indexOf(v)">
+            <http-param-template :value="v" :prop-name="'httpBody.' + idx + '.name'" />
+            <Button type="error" :size="'small'" @click="removeThisBody(v)">删除此项 X</Button>
+          </div>
+          <Button type="success" :size="'small'" @click="addHttpBody()" style="margin-bottom: 20px">新增</Button>
         </el-form-item>
         <el-form-item>
           <Button type="primary" @click="handleSubmit('apiExecutorForm')">提交</Button>&nbsp;
@@ -101,6 +108,7 @@ export default {
           this.form = res.data.data
           this.form.httpParams = this.form.httpParams || []
           this.form.httpHeaders = this.form.httpHeaders || []
+          this.form.httpBody = this.form.httpBody || []
           this.resetRuleInline()
         })
       }
@@ -112,6 +120,7 @@ export default {
         form.timeout = 10
         form.httpHeaders = []
         form.httpParams = []
+        form.httpBody = []
       }
       return form
     },
@@ -164,6 +173,11 @@ export default {
       form.httpParams.push({})
       this.resetRuleInline()
     },
+    addHttpBody() {
+      const form = this.form
+      form.httpBody.push({})
+      this.resetRuleInline()
+    },
     removeThisHeader (v) {
       const form = this.form
       form.httpHeaders.splice(form.httpHeaders.indexOf(v), 1)
@@ -172,6 +186,11 @@ export default {
     removeThisParam (v) {
       const form = this.form
       form.httpParams.splice(form.httpParams.indexOf(v), 1)
+      this.resetRuleInline()
+    },
+    removeThisBody (v) {
+      const form = this.form
+      form.httpBody.splice(form.httpBody.indexOf(v), 1)
       this.resetRuleInline()
     },
     handleReset (name) {

@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Date;
-
 /**
  * @author qinglin.liu
  * created at 2024/3/19 16:07
@@ -38,6 +36,11 @@ public class HttpExecuteLogPo extends BasePo {
      * HttpParams参数
      */
     private String httpParams;
+
+    /**
+     * HttpBody参数
+     */
+    private String httpBody;
 
     /**
      * 耗时/毫秒

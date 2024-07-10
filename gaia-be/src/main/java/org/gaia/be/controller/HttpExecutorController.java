@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.apache.commons.collections4.MapUtils;
 import org.gaia.be.enums.CallTypeEnum;
 import org.gaia.be.exceptions.BizException;
 import org.gaia.be.model.dto.EventParam;
@@ -22,7 +23,6 @@ import org.gaia.be.model.vo.HttpExecutorVo;
 import org.gaia.be.service.HttpExecuteLogService;
 import org.gaia.be.service.HttpExecutorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,8 +33,6 @@ import org.winterframework.core.support.ApiResponse;
 import org.winterframework.core.tool.JSONTool;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +49,10 @@ public class HttpExecutorController extends BaseController {
     private HttpExecutorService httpExecutorService;
     @Autowired
     private HttpExecuteLogService httpExecuteLogService;
+
+    private static final String APPLICATION_JSON = "application/json";
+
+    private static final String URL_ENCODED_FORM = "application/x-www-form-urlencoded";
 
     @PostMapping("/list")
     public ApiResponse<Page<HttpExecutorVo>> listApiExecutors(@RequestBody HttpExecutorQueryParam query) {
@@ -103,6 +105,13 @@ public class HttpExecutorController extends BaseController {
             }
         }
 
+        for (EventParam httpBody : httpExecutorVo.getHttpBody()) {
+            Object value = params.getBody().get(httpBody.getName());
+            if (Boolean.TRUE.equals(httpBody.getRequired()) && Objects.isNull(value)) {
+                throw new BizException("参数错误!");
+            }
+        }
+
         CallTypeEnum callTypeEnum = httpExecutorVo.getCallType();
         String url = null;
         if (callTypeEnum == CallTypeEnum.HTTP_CALL) {
@@ -118,52 +127,40 @@ public class HttpExecutorController extends BaseController {
                 .readTimeout(httpExecutorVo.getTimeout(), TimeUnit.SECONDS)
                 .build();
 
-        List<String> queryList = new ArrayList<>();
-        if ("GET".equalsIgnoreCase(httpExecutorVo.getHttpMethod()) && !CollectionUtils.isEmpty(params.getParams())) {
-            for (String s : params.getParams().keySet()) {
-                queryList.add(s + "=" + params.getParams().get(s));
-            }
+        if (MapUtils.isNotEmpty(params.getParams())) {
             if (url.indexOf('?') < 0) {
                 url += '?';
             }
-            url += String.join("&", queryList);
+            url += HttpUtil.toParams(params.getParams());
         }
 
         Request.Builder requestBuilder = new Request.Builder().url(url);
 
-
-        okhttp3.RequestBody requestBody = null;
-        if (!"GET".equalsIgnoreCase(httpExecutorVo.getHttpMethod())) {
-            String contentType = org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-            MediaType mediaType = MediaType.parse(contentType);
-            if (!CollectionUtils.isEmpty(params.getHeaders())) {
-                for (String s : params.getHeaders().keySet()) {
-                    String v = String.valueOf(params.getHeaders().get(s));
-                    if ("Content-Type".equalsIgnoreCase(s)) {
-                        MediaType tmpMediaType = MediaType.parse(v);
-                        if (tmpMediaType != null) {
-                            mediaType = tmpMediaType;
-                            contentType = s;
-                        }
+        okhttp3.RequestBody requestBody;
+        String contentType = URL_ENCODED_FORM;
+        MediaType mediaType = MediaType.parse(contentType);
+        if (MapUtils.isNotEmpty(params.getHeaders())) {
+            for (Map.Entry<String, Object> entry : params.getHeaders().entrySet()) {
+                String k = entry.getKey();
+                String v = String.valueOf(entry.getValue());
+                if ("Content-Type".equalsIgnoreCase(k)) {
+                    MediaType tmpMediaType = MediaType.parse(v);
+                    if (tmpMediaType != null) {
+                        mediaType = tmpMediaType;
+                        contentType = v;
                     }
-                    requestBuilder = requestBuilder.addHeader(s, v);
                 }
-            }
-            if (contentType.contains(org.springframework.http.MediaType.APPLICATION_JSON_VALUE)) {
-                String body = JSONTool.toJSONString(params.getParams());
-                requestBody = okhttp3.RequestBody.create(body, mediaType);
-            } else {
-                String body = HttpUtil.toParams(params.getParams());
-                requestBody = okhttp3.FormBody.create(body, mediaType);
-            }
-        } else {
-            if (!CollectionUtils.isEmpty(params.getHeaders())) {
-                for (String s : params.getHeaders().keySet()) {
-                    String v = String.valueOf(params.getHeaders().get(s));
-                    requestBuilder = requestBuilder.addHeader(s, v);
-                }
+                requestBuilder = requestBuilder.addHeader(k, v);
             }
         }
+
+        String body;
+        if (contentType.contains(APPLICATION_JSON)) {
+            body = JSONTool.toJSONString(params.getBody());
+        } else {
+            body = HttpUtil.toParams(params.getBody());
+        }
+        requestBody = okhttp3.RequestBody.create(body, mediaType);
 
         requestBuilder = requestBuilder.method(httpExecutorVo.getHttpMethod(), requestBody);
 
@@ -173,6 +170,7 @@ public class HttpExecutorController extends BaseController {
         httpExecuteLogPo.setHttpMethod(httpExecutorVo.getHttpMethod());
         httpExecuteLogPo.setHttpHeaders(JSONTool.toJSONString(params.getHeaders()));
         httpExecuteLogPo.setHttpParams(JSONTool.toJSONString(params.getParams()));
+        httpExecuteLogPo.setHttpBody(JSONTool.toJSONString(params.getBody()));
         httpExecuteLogPo = httpExecuteLogService.createApiExecuteLog(httpExecuteLogPo);
 //        apiExecuteLogPo.setExecuteUser();
         long startTime = System.currentTimeMillis();

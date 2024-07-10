@@ -63,6 +63,11 @@ public class HttpExecutorCreateParam {
     private List<EventParam> httpParams;
 
     /**
+     * Http 请求体
+     */
+    private List<EventParam> httpBody;
+
+    /**
      * 创建人
      */
     private String createdBy;

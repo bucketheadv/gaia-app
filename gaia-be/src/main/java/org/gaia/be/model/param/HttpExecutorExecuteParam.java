@@ -23,4 +23,6 @@ public class HttpExecutorExecuteParam {
     private Map<String, Object> params;
 
     private Map<String, Object> headers;
+
+    private Map<String, Object> body;
 }

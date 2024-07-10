@@ -68,6 +68,12 @@ public class HttpExecutorPo extends BasePo {
     private List<EventParam> httpParams;
 
     /**
+     * Http 请求体
+     */
+    @TableField(typeHandler = ListEventParamJacksonTypeHandler.class)
+    private List<EventParam> httpBody;
+
+    /**
      * 创建人
      */
     private String createdBy;
