@@ -3,7 +3,7 @@ package org.gaia.be.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.gaia.be.dao.HttpExecuteLogMapper;
+import org.gaia.be.dao.mapper.HttpExecuteLogMapper;
 import org.gaia.be.model.param.HttpExecuteLogQueryParam;
 import org.gaia.be.model.po.HttpExecuteLogPo;
 import org.gaia.be.model.vo.HttpExecuteLogVo;

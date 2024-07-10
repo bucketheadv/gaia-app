@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.gaia.be.dao.PassportInfoMapper;
+import org.gaia.be.dao.mapper.PassportInfoMapper;
 import org.gaia.be.model.param.PassportInfoCreateParam;
 import org.gaia.be.model.param.PassportInfoQueryParam;
 import org.gaia.be.model.param.PassportInfoUpdateParam;

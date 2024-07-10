@@ -22,7 +22,7 @@ public enum CallTypeEnum {
 
     private final String desc;
 
-    public static final Map<Integer, CallTypeEnum> MAP = new HashMap<>();
+    private static final Map<Integer, CallTypeEnum> MAP = new HashMap<>();
 
     static {
         for (CallTypeEnum value : values()) {
