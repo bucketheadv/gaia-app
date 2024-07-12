@@ -25,7 +25,7 @@ public class CronController extends BaseController {
                                                    @RequestParam(defaultValue = "10") Integer count) throws Exception {
         List<String> values;
         try {
-            values = CronTool.getNextValidTimeAfter(cron, count);
+            values = CronTool.getNextValidTimeAfter(cron, null, count);
         } catch (ParseException e) {
             log.error("", e);
             throw new BizException(e.getMessage());

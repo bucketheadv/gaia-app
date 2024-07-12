@@ -1,6 +1,7 @@
 package org.gaia.be.controller;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,9 +17,9 @@ import org.winterframework.core.tool.DateTool;
 @RequestMapping("/timeTransfer")
 public class TimeTransferController extends BaseController {
     @GetMapping("/toEpochMilli")
-    public ApiResponse<Long> transferToTimestamp(@RequestParam String datetime, @RequestParam String timezone) {
+    public ApiResponse<String> transferToTimestamp(@RequestParam String datetime, @RequestParam String timezone) {
         DateTime dateTime = DateTool.parseTimeZoneRetainFields(datetime, timezone);
-        return ok(dateTime.getMillis());
+        return ok(dateTime.getMillis() + " - UTC 时间: 【" + new DateTime(dateTime.getMillis(), DateTimeZone.UTC).toString("yyyy-MM-dd HH:mm:ss") + "】");
     }
 
     @GetMapping("/toDatetime")
