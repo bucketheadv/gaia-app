@@ -20,9 +20,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/cron")
 public class CronController extends BaseController {
-    @GetMapping("/getNextValidTimeAfterNow")
-    public ApiResponse<?> getNextValidTimeAfterNow(@RequestParam String cron,
-                                                   @RequestParam(defaultValue = "10") Integer count) throws Exception {
+    @GetMapping("/nextTriggerTime")
+    public ApiResponse<List<String>> nextTriggerTime(@RequestParam String cron, @RequestParam(defaultValue = "10") Integer count) throws Exception {
         List<String> values;
         try {
             values = CronTool.getNextValidTimeAfter(cron, null, count);

@@ -67,7 +67,7 @@
   </div>
 </template>
 <script lang="js">
-import { getNextValidTimeAfterNow } from '@/api/cron'
+import { getNextTriggerTime } from '@/api/cron'
 
 export default {
   mounted () {
@@ -91,7 +91,7 @@ export default {
         if (!valid) {
           return
         }
-        getNextValidTimeAfterNow(this.form).then(res => {
+        getNextTriggerTime(this.form).then(res => {
           const result = res.data
           if (result.error) {
             this.$Message.error({
